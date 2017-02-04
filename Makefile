@@ -26,7 +26,7 @@ clientsharding.so: rbtree.o murmurhash.o clientsharding.o
 		$(CC) $(LDFLAGS) -o $@ $^
 install:
 	 $(INSTALL) -d $(DESTDIR)/$(LUA_LIB_DIR)
-	 $(INSTALL) ShardClient.so  $(DESTDIR)/$(LUA_LIB_DIR)
+	 $(INSTALL) clientsharding.so  $(DESTDIR)/$(LUA_LIB_DIR)
 clean:
 	rm -rf *.o *.so
 

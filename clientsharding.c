@@ -8,8 +8,8 @@
 #define LIB_NAME 	"clientsharding"
 #define NODE_NUM 	160
 
-static int  init(lua_State *L);
-static int  close(lua_State *L);
+static int init(lua_State *L);
+static int close(lua_State *L);
 static uint64_t hash(const char *hash_str,size_t len);
 static int position(lua_State *L);
 
@@ -23,8 +23,8 @@ static int init(lua_State *L){
 	/*把一个 nil 压栈*/
 	lua_pushnil(L);/*－1 --> nil,-2 -->table*/
 
-
-	/*从栈上弹出一个 key（键）， 然后把索引指定的表中 key-value（健值）对压入堆栈 （指定 key 后面的下一 (next) 对）。 
+	/*
+	 *从栈上弹出一个 key（键）， 然后把索引指定的表中 key-value（健值）对压入堆栈 （指定 key 后面的下一 (next) 对）。 
 	 *如果表中以无更多元素， 那么 lua_next 将返回 0 （什么也不压入堆栈）
 	 */
 	while(0 != lua_next(L,-2)){
@@ -56,7 +56,6 @@ static int init(lua_State *L){
 		}
 		lua_pop(L, 1);
 
-
 		lua_getfield(L,-2,"name");
 		name = lua_tostring(L,-1);
 		lua_pop(L,1);
@@ -70,14 +69,12 @@ static int init(lua_State *L){
 		if(NULL == name){
 			for (int n = 0; n < NODE_NUM * weight; ++n){	
 				size_t len=snprintf(hash_str,100,"SHARD-%zu-NODE-%d", (index-1), n );
-
 				int64_t  hashCode=(int64_t)hash(hash_str,len);
 				insertTreeNode(&rbtree,hashCode,location);
 			}
 		}else{
 			for (int n = 0; n < NODE_NUM * weight; ++n){
 				size_t len=snprintf(hash_str,100,"%s*%zu%d",name,weight,n);
-
 				int64_t  hashCode=(int64_t)hash(hash_str,len);
 				insertTreeNode(&rbtree,hashCode,location);
 			}
@@ -128,10 +125,7 @@ static int quick_init(lua_State *L){
 		luaL_checktype( L, -2, LUA_TSTRING );
 		/*获取table索引值*/
 		size_t index = lua_tointeger(L, -1);
-		/*void lua_getfield (lua_State *L, int index, const char *k);
-		 *把 t[k] 值压入堆栈， 这里的 t 是指有效索引 index 指向的值
-		 */
-		location=lua_tolstring(L,-2,&location_len);
+		location = lua_tolstring(L,-2,&location_len);
 		if(NULL == location || 0 == location_len){
 			const char *errorMessage=lua_pushfstring(L,"location must not be empty at %d in table.",index);	
 			luaL_argerror( L ,2,errorMessage);
@@ -140,16 +134,15 @@ static int quick_init(lua_State *L){
 
 		char hash_str[100];
 		for (int n = 0; n < NODE_NUM * weight; ++n){	
-			size_t len=snprintf(hash_str,100,"SHARD-%zu-NODE-%d", (index-1), n );
-
-			int64_t  hashCode=(int64_t)hash(hash_str,len);
+			size_t len = snprintf(hash_str,100,"SHARD-%zu-NODE-%d", (index-1), n );
+			int64_t  hashCode = (int64_t)hash(hash_str,len);
 			insertTreeNode(&rbtree,hashCode,location);
 		}
 		lua_pop(L, 2);
 	}
 
 	void **userdata = lua_newuserdata(L,sizeof(void *));
-	*userdata=rbtree;
+	*userdata = rbtree;
 
 	/*Create GC method to clean up rbtree*/
 	lua_newtable(L);

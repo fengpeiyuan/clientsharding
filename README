@@ -4,19 +4,4 @@ compile:
 	make CC=gcc LUA_INCLUDE_DIR=/usr/local/include/ LUA_LIB_DIR=/usr/local/lib/lua/5.1/
 
 example:
-	--nomal
-	local ShardClient=require 'ShardClient'
-	local shards={
-	      {name="192.168.1.101",weight=1,location="192.168.1.101"},
-	      {name="192.168.1.102",weight=1,location="192.168.1.102"},
-	      {name="192.168.1.103",weight=1,location="192.168.1.103"}
-	      }
-
-	local findLocation=ShardClient.init(shards)
-	local location=findLocation("J_100001")
-
-	--quick init
-	local ShardClient=require 'ShardClient'
-	local shards={"192.168.1.101","192.168.1.102",192.168.1.103}
-	local findLocation=ShardClient.init(shards)
-	local location=findLocation("J_100001")
+	please see clientshardingtest.lua
